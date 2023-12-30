@@ -38,11 +38,9 @@ def acessarNotas(matricula, password):
     materias = boletim.findAll('tr')
 
     lista_notas = []
-    i = 0
 
     sleep(2)
     for materia in materias:
-        i = i+1
         nome = materia.css.select_one("td:nth-child(2)")
         nota1 = materia.css.select_one("td:nth-child(8)")
         nota2 = materia.css.select_one("td:nth-child(10)")
@@ -53,7 +51,7 @@ def acessarNotas(matricula, password):
         if nome is not None and nota1 is not None and nota2 is not None and nota3 is not None and nota4 is not None and media is not None:
             lista_notas.append([nome.text, nota1.text, nota2.text, nota3.text, nota4.text, media.text])
         else:
-            print(f"Não foi possível encontrar os elementos na linha {i}")
+            print(f"Não foi possível encontrar os elementos na linha")
 
 
     planilha = pd.DataFrame(lista_notas, columns=['materia', 'nota 1', 'nota 2', 'nota 3', 'nota 4', 'media'])
