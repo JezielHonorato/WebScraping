@@ -8,53 +8,56 @@ import pandas as pd
 
 
 # Definir as opções do site
-options = Options()
-options.add_argument('headless') # não aparecer
-options.add_argument('window-size=400,800')
+def acessarNotas(matricula, password):
+    options = Options()
+    options.add_argument('headless') # não aparecer
+    options.add_argument('window-size=400,800')
 
-driver = webdriver.Chrome(options=options) 
-driver.get('https://suap.ifrn.edu.br') # Abrir o navegador
+    driver = webdriver.Chrome(options=options) 
+    driver.get('https://suap.ifrn.edu.br') # Abrir o navegador
 
-print(driver.page_source)
+    print(driver.page_source)
 
-#Logar
-user = driver.find_element(By.ID, "id_username")
-user.send_keys(20211144010003)
+    #Logar
+    user = driver.find_element(By.ID, "id_username")
+    user.send_keys(matricula)
 
-senha = driver.find_element(By.ID, "id_password")
-senha.send_keys('Deusegod+1')
-senha.submit()
+    senha = driver.find_element(By.ID, "id_password")
+    senha.send_keys(password)
+    senha.submit()
 
-#Redirecionar para o boletim
-driver.get('https://suap.ifrn.edu.br/edu/aluno/20211144010003/?tab=boletim') 
-sleep(2)
+    #Redirecionar para o boletim
+    driver.get('https://suap.ifrn.edu.br/edu/aluno/20211144010003/?tab=boletim') 
+    sleep(2)
 
-conteudo = driver.page_source
+    conteudo = driver.page_source
 
-site = BeautifulSoup(conteudo, 'html.parser')
+    site = BeautifulSoup(conteudo, 'html.parser')
 
-boletim = site.find('table', attrs={'class': 'borda'})
-materias = boletim.findAll('tr')
+    boletim = site.find('table', attrs={'class': 'borda'})
+    materias = boletim.findAll('tr')
 
-lista_notas = []
-i = 0
+    lista_notas = []
+    i = 0
 
-sleep(2)
-for materia in materias:
-    i = i+1
-    nome = materia.css.select_one("td:nth-child(2)")
-    nota1 = materia.css.select_one("td:nth-child(8)")
-    nota2 = materia.css.select_one("td:nth-child(10)")
-    nota3 = materia.css.select_one("td:nth-child(12)")
-    nota4 = materia.css.select_one("td:nth-child(14)")
-    media = materia.css.select_one("td:nth-child(19)")
+    sleep(2)
+    for materia in materias:
+        i = i+1
+        nome = materia.css.select_one("td:nth-child(2)")
+        nota1 = materia.css.select_one("td:nth-child(8)")
+        nota2 = materia.css.select_one("td:nth-child(10)")
+        nota3 = materia.css.select_one("td:nth-child(12)")
+        nota4 = materia.css.select_one("td:nth-child(14)")
+        media = materia.css.select_one("td:nth-child(19)")
 
-    if nome is not None and nota1 is not None and nota2 is not None and nota3 is not None and nota4 is not None and media is not None:
-        lista_notas.append([nome.text, nota1.text, nota2.text, nota3.text, nota4.text, media.text])
-    else:
-        print(f"Não foi possível encontrar os elementos na linha {i}")
+        if nome is not None and nota1 is not None and nota2 is not None and nota3 is not None and nota4 is not None and media is not None:
+            lista_notas.append([nome.text, nota1.text, nota2.text, nota3.text, nota4.text, media.text])
+        else:
+            print(f"Não foi possível encontrar os elementos na linha {i}")
 
 
-planilha = pd.DataFrame(lista_notas, columns=['materia', 'nota 1', 'nota 2', 'nota 3', 'nota 4', 'media'])
+    planilha = pd.DataFrame(lista_notas, columns=['materia', 'nota 1', 'nota 2', 'nota 3', 'nota 4', 'media'])
 
-planilha.to_excel('notas.xlsx', index=False)
+    planilha.to_excel('notas.xlsx', index=False)
+
+acessarNotas()
